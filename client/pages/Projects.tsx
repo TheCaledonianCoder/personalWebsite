@@ -1,43 +1,68 @@
-import React from "react";
-import { Link } from "react-router-dom";
+export const CATEGORIES = [
+  "All",
+  "Web Design",
+  "Games",
+  "Apps",
+  "SAAS",
+] as const;
 
-type ProjectType = {
-  id: string | number; // replace with actual data type if not string/number
+export type Category = Exclude<(typeof CATEGORIES)[number], "All">;
+
+export type ProjectType = {
+  id: number; // or string — must match your data
   name: string;
   description: string;
-  imageUrl: string; // URL of the project's image
+  imageUrl: string;
+  categories: Category[]; // 👈 required
 };
 
-const Project = ({ id, name, description, imageUrl }: ProjectType) => {
-  return (
-    <div className="flex flex-col items-center justify-center w-1/3 p-8 border-b border-slate-200">
-      <img src={imageUrl} alt={name} />
-      <h3 className="text-xl font-bold mb-3 text-slate-900">{name}</h3>
-      <p className="text-slate-600 text-sm leading-relaxed">{description}</p>
-      <Link
-        to={`/projects/${id}`}
-        className="inline-block mt-5 text-sm text-blue-600 font-medium hover:underline"
-      >
-        View Project &rarr;
-      </Link>
-    </div>
-  );
-};
-
-type ProjectsProps = {
-  projects: Array<ProjectType>;
-};
-
-const Projects = ({ projects }: ProjectsProps) => {
-  return (
-    <div className="w-full flex justify-center items-center py-8">
-      <div className="grid grid-cols-3 gap-x-16 gap-y-6">
-        {projects.map((project) => (
-          <Project key={project.id} {...project} />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default Projects;
+export const projects: ProjectType[] = [
+  {
+    id: 1,
+    name: "Lumina Portfolio",
+    description:
+      "A minimal portfolio site for a photographer, built with a custom CMS and responsive galleries.",
+    imageUrl: "https://picsum.photos/seed/lumina/640/360",
+    categories: ["Web Design"],
+  },
+  {
+    id: 2,
+    name: "Orbit Runner",
+    description:
+      "A fast-paced endless runner in the browser with canvas rendering and gamepad support.",
+    imageUrl: "https://picsum.photos/seed/orbit/640/360",
+    categories: ["Games"],
+  },
+  {
+    id: 3,
+    name: "TaskFlow",
+    description:
+      "A kanban-style task manager with drag-and-drop, offline support, and team workspaces.",
+    imageUrl: "https://picsum.photos/seed/taskflow/640/360",
+    categories: ["Apps", "SAAS"],
+  },
+  {
+    id: 4,
+    name: "Brew & Co.",
+    description:
+      "E-commerce site for a specialty coffee roaster, with subscriptions and a bean-matching quiz.",
+    imageUrl: "https://picsum.photos/seed/brew/640/360",
+    categories: ["Web Design", "SAAS"],
+  },
+  {
+    id: 5,
+    name: "Pixel Painter",
+    description:
+      "A collaborative pixel-art canvas where friends draw together in real time.",
+    imageUrl: "https://picsum.photos/seed/pixel/640/360",
+    categories: ["Games", "Apps"],
+  },
+  {
+    id: 6,
+    name: "Metricly Dashboard",
+    description:
+      "Analytics dashboard for small businesses with customizable widgets and email reports.",
+    imageUrl: "https://picsum.photos/seed/metricly/640/360",
+    categories: ["SAAS", "Web Design"],
+  },
+];

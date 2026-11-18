@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { fetchPosts, type Post } from "../src/services/api";
-import { MarkdownImageGallery } from "../components/MarkdownImageGallery";
+import { fetchPosts, type Post } from "../../src/services/api";
+import { MarkdownImageGallery } from "../../components/MarkdownImageGallery";
 
 export function Blog() {
   const [posts, setPosts] = useState<Post[]>([]);

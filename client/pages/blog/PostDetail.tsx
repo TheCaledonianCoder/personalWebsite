@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { fetchPostBySlug, type Post } from "../src/services/api";
-import { MarkdownImageGallery } from "../components/MarkdownImageGallery";
+import { fetchPostBySlug, type Post } from "../../src/services/api";
+import { MarkdownImageGallery } from "../../components/MarkdownImageGallery";
 
 export function PostDetail() {
   const { slug } = useParams<{ slug: string }>();

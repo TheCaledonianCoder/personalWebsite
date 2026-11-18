@@ -1,13 +1,13 @@
 import { Routes, Route } from "react-router-dom";
-import Home from "../pages/Home";
-import Blog from "../pages/Blog";
-import PostDetail from "../pages/PostDetail";
-import Contact from "../pages/Contact";
-import Login from "../pages/Login";
-import ProjectsPage from "../pages/ProjectsPage";
-import AdminDashboard from "../pages/AdminDashboard";
-import AdminCreatePost from "../pages/AdminCreatePost";
-import AdminManagePosts from "../pages/AdminManagePosts";
+import Home from "../pages/home/Home";
+import Blog from "../pages/blog/Blog";
+import PostDetail from "../pages/blog/PostDetail";
+import Contact from "../pages/contact/Contact";
+import Login from "../pages/admin/Login";
+import ProjectsPage from "../pages/projects/ProjectsPage";
+import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminCreatePost from "../pages/admin/AdminCreatePost";
+import AdminManagePosts from "../pages/admin/AdminManagePosts";
 import ProtectedRoute from "../components/ProtectedRoute";
 import Navbar from "../components/Navbar";
 

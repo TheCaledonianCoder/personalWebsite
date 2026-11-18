@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
-import { createPost, uploadImage } from "../src/services/api";
-import { MarkdownImageGallery } from "../components/MarkdownImageGallery";
+import { createPost, uploadImage } from "../../src/services/api";
+import { MarkdownImageGallery } from "../../components/MarkdownImageGallery";
 
 /* Small reusable toolbar button */
 function ToolButton({

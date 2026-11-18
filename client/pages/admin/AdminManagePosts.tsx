@@ -7,8 +7,8 @@ import {
   deletePost,
   uploadImage,
   type Post,
-} from "../src/services/api";
-import { MarkdownImageGallery } from "../components/MarkdownImageGallery";
+} from "../../src/services/api";
+import { MarkdownImageGallery } from "../../components/MarkdownImageGallery";
 
 /* Small reusable toolbar button */
 function ToolButton({

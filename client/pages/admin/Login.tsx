@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginAdmin } from "../src/services/api";
+import { loginAdmin } from "../../src/services/api";
 
 export function Login() {
   const [username, setUsername] = useState("");

@@ -1,11 +1,70 @@
 @import "tailwindcss";
 
+/* ========================================
+   THEME TOKENS
+   (tweak the whole look from here)
+======================================== */
+
+:root {
+  --bg-base: #1B1512;      /* deep warm charcoal / espresso */
+  --text-base: #F3EFE4;    /* cream text on dark */
+
+  --blob-orange: rgba(230, 46, 0, 0.50);
+  --blob-blue:   rgba(69, 176, 201, 0.45);
+  --blob-yellow: rgba(247, 181, 56, 0.40);
+  --blob-coral:  rgba(242, 100, 25, 0.45);
+  --blob-cream:  rgba(245, 241, 230, 0.15); /* subtle light glow, bottom right */
+}
+
+
+/* ========================================
+   GLOBAL BASE STYLES
+======================================== */
+
 @layer base {
-  html, body {
-    background-color: #F4F5F0;
-    font-family: 'Jost', sans-serif;
-    color: #0f172a;
+  html,
+  body,
+  #root {
+    min-height: 100%;
     margin: 0;
     padding: 0;
   }
+
+  html,
+  body {
+    background-color: var(--bg-base);
+    font-family: 'Jost', sans-serif;
+    color: var(--text-base);
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+}
+
+
+/* ========================================
+   STATIC MESH GRADIENT BACKGROUND
+   (single element, gradients only — no
+   filters or blend modes)
+======================================== */
+
+.mesh-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: var(--bg-base);
+  background-image:
+    /* ORANGE — top left */
+    radial-gradient(55% 50% at 12% 8%, var(--blob-orange) 0%, transparent 70%),
+    /* BLUE — top right */
+    radial-gradient(55% 50% at 88% 10%, var(--blob-blue) 0%, transparent 70%),
+    /* YELLOW — centre */
+    radial-gradient(50% 45% at 48% 58%, var(--blob-yellow) 0%, transparent 70%),
+    /* CORAL — bottom left */
+    radial-gradient(50% 45% at 20% 92%, var(--blob-coral) 0%, transparent 70%),
+    /* CREAM GLOW — bottom right */
+    radial-gradient(55% 50% at 88% 92%, var(--blob-cream) 0%, transparent 70%);
+  background-repeat: no-repeat;
 }

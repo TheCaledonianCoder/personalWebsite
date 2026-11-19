@@ -1,6 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useCallback,
+} from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { logoutAdmin } from "../src/services/api";
+import { ThemeToggle } from "./ThemeToggle";
 
 const navLinks = [
   { path: "/", label: "Home" },
@@ -15,8 +22,32 @@ export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const linkRefs = useRef(new Map<string, HTMLAnchorElement>());
+  const [indicator, setIndicator] = useState({
+    left: 0,
+    width: 0,
+    ready: false,
+  });
+
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const closeMenu = () => setIsOpen(false);
+
+  const measure = useCallback(() => {
+    const el = linkRefs.current.get(location.pathname);
+    if (el) {
+      setIndicator({ left: el.offsetLeft, width: el.offsetWidth, ready: true });
+    } else {
+      setIndicator((prev) => ({ ...prev, ready: false }));
+    }
+  }, [location.pathname]);
+
+  useLayoutEffect(measure, [measure]);
+
+  useEffect(() => {
+    window.addEventListener("resize", measure);
+    document.fonts?.ready.then(measure).catch(() => {});
+    return () => window.removeEventListener("resize", measure);
+  }, [measure]);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -46,14 +77,22 @@ export function Navbar() {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const setLinkRef = (path: string) => (el: HTMLAnchorElement | null) => {
+    if (el) linkRefs.current.set(path, el);
+    else linkRefs.current.delete(path);
+  };
+
   const getLinkClasses = (path: string, isMobile = false) =>
-    `text-sm font-medium transition-all duration-200 ${
-      isMobile ? "w-full text-center py-2" : "px-4 py-1 relative z-10"
+    `text-sm font-medium transition-colors duration-200 ${
+      isMobile ? "w-full text-center py-2 border-b-2" : "px-1 py-2"
     } ${
       isActive(path)
-        ? "bg-[#1A4D57] text-white shadow-sm" +
-          (isMobile ? "" : " rounded-full")
-        : "bg-white/90 text-slate-700 hover:text-[#1A4D57]"
+        ? isMobile
+          ? "border-[#1A4D57] text-[#1A4D57]"
+          : "text-[#1A4D57] dark:text-white"
+        : isMobile
+          ? "border-transparent text-slate-700 hover:text-[#1A4D57]"
+          : "text-slate-700 hover:text-[#1A4D57] dark:text-white/70 dark:hover:text-white"
     }`;
 
   const renderLinks = (isMobile = false) => {
@@ -62,28 +101,21 @@ export function Navbar() {
       ...(isAdmin ? [{ path: "/admin", label: "Admin" }] : []),
     ];
 
-    return allLinks.map(({ path, label }, index) => {
-      let roundedClass = "";
-      if (!isMobile) {
-        if (index === 0) roundedClass = "rounded-l-full";
-        if (index === allLinks.length - 1) roundedClass = "rounded-r-full";
-      }
-
-      return (
-        <Link
-          key={path}
-          to={path}
-          onClick={isMobile ? closeMenu : undefined}
-          className={`${getLinkClasses(path, isMobile)} ${roundedClass}`}
-        >
-          {label}
-        </Link>
-      );
-    });
+    return allLinks.map(({ path, label }) => (
+      <Link
+        key={path}
+        ref={isMobile ? undefined : setLinkRef(path)}
+        to={path}
+        onClick={isMobile ? closeMenu : undefined}
+        className={getLinkClasses(path, isMobile)}
+      >
+        {label}
+      </Link>
+    ));
   };
 
   return (
-    <header className="w-full bg-transparent text-slate-950 fixed top-0 left-0 right-0 z-50">
+    <header className="w-full bg-white/50 supports-[backdrop-filter]:bg-white/55 backdrop-blur-[1px] text-slate-900 dark:bg-white/70 dark:supports-[backdrop-filter]:bg-white/5 dark:text-white fixed top-0 left-0 right-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-4 relative flex items-center justify-between">
         {/* Logo - Far Left */}
         <Link
@@ -92,7 +124,7 @@ export function Navbar() {
           className="flex items-center justify-start group outline-none focus:outline-none border-none focus:ring-0 mr-auto"
         >
           <svg
-            className="h-10 w-auto fill-white transition-transform duration-200 group-hover:scale-105 drop-shadow-sm"
+            className="h-10 w-auto fill-[#1A4D57] transition-transform duration-200 group-hover:scale-105 drop-shadow-sm dark:fill-white"
             viewBox="0 0 2000 2000"
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
@@ -116,20 +148,35 @@ export function Navbar() {
           </svg>
         </Link>
 
-        {/* Desktop Navigation - Centered Pill */}
-        <nav className="hidden md:flex items-center space-x-3 absolute left-1/2 -translate-x-1/2">
-          <div className="flex items-center rounded-full bg-white/90 overflow-hidden shadow-sm">
+        {/* Desktop Navigation - text links with sliding underline */}
+        <nav className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2">
+          <div className="relative flex items-center gap-6">
+            {/* moving underline */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute bottom-0 left-0 h-0.5 rounded-full bg-[#1A4D57] dark:bg-white"
+              style={{
+                left: indicator.left,
+                width: indicator.width,
+                opacity: indicator.ready ? 1 : 0,
+                transition: indicator.ready
+                  ? "left 300ms cubic-bezier(0.4, 0, 0.2, 1), width 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease"
+                  : "none",
+              }}
+            />
             {renderLinks(false)}
           </div>
         </nav>
 
-        {/* Desktop Logout Link & Mobile Menu Toggle */}
-        <div className="flex items-center space-x-4">
+        {/* Theme Toggle, Logout & Mobile Menu Toggle */}
+        <div className="flex items-center space-x-2 md:space-x-4">
+          <ThemeToggle />
+
           {isAdmin && (
             <a
               href="#logout"
               onClick={handleLogout}
-              className="hidden md:inline-block text-sm font-medium text-white/90 hover:text-white transition-colors duration-200 drop-shadow-sm"
+              className="hidden md:inline-block text-sm font-medium text-slate-700 hover:text-[#1A4D57] dark:text-white/90 dark:hover:text-white transition-colors duration-200"
             >
               Log Out
             </a>
@@ -141,7 +188,7 @@ export function Navbar() {
             onClick={toggleMenu}
             aria-label="Toggle navigation menu"
             aria-expanded={isOpen}
-            className="md:hidden p-2 text-white hover:text-slate-200 focus:outline-none rounded-md transition-colors bg-white/20"
+            className="md:hidden p-2 rounded-md transition-colors bg-slate-900/10 text-slate-800 hover:text-slate-950 hover:bg-slate-900/15 dark:bg-white/20 dark:text-white dark:hover:text-slate-200 dark:hover:bg-white/25 focus:outline-none"
           >
             <svg
               className="h-6 w-6"
@@ -167,24 +214,21 @@ export function Navbar() {
           </button>
         </div>
       </div>
-
       {/* Mobile Navigation Dropdown */}
       {isOpen && (
         <nav className="md:hidden bg-transparent px-6 pt-2 pb-6 space-y-2 flex flex-col items-center">
-          <div className="w-full max-w-xs flex flex-col space-y-2 items-center">
-            <div className="w-full flex flex-col rounded-2xl bg-white/95 overflow-hidden shadow-sm">
-              {renderLinks(true)}
-            </div>
-            {isAdmin && (
-              <a
-                href="#logout"
-                onClick={handleLogout}
-                className="w-full text-center py-2 text-sm font-medium text-slate-700 hover:text-[#1A4D57] bg-white/95 rounded-xl shadow-sm transition-colors duration-200"
-              >
-                Log Out
-              </a>
-            )}
+          <div className="w-full max-w-xs flex flex-col rounded-2xl bg-white/70 overflow-hidden shadow-sm ring-1 ring-white/40">
+            {renderLinks(true)}
           </div>
+          {isAdmin && (
+            <a
+              href="#logout"
+              onClick={handleLogout}
+              className="w-full text-center py-2 text-sm font-medium text-slate-700 hover:text-[#1A4D57] bg-white/70 rounded-xl shadow-sm ring-1 ring-white/40 transition-colors duration-200"
+            >
+              Log Out
+            </a>
+          )}
         </nav>
       )}
     </header>
